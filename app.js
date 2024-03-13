@@ -23,8 +23,8 @@ app.use(express.static("public"));
 
 const saltRounds=10;
 
-app.get("/",(req,res)=>{
-    res.render("login.ejs");//login page
+app.get("/login",(req,res)=>{
+    res.render("login.ejs",{data:0});//login page
 })
 
 app.post("/login",async (req,res)=>{
@@ -44,26 +44,26 @@ app.post("/login",async (req,res)=>{
 const x=storedusername.rows.length ;
  if(x>0){
     if(loginpassword=== storedusername.rows[0].tpassword){
-        res.render("secrets.ejs");
+        res.render("secrets.ejs",{data:0});
     }
     else{
-        res.send("<h1> password is incorrect</h1>");
+        res.render("login.ejs",{data:"Wrong Password"})
     }
  }
  else{
-    res.send("user not found");
- }
+    res.render("login.ejs",{data:"No User Found"})
+  }
         }catch(err){
             console.log(err);
         }
 })
 
 app.get("/register",(req,res)=>{
-    res.render("register.ejs");
+    res.render("register.ejs",{data:0});
 })
 
 app.post("/register",async (req,res)=>{
-  
+    const user_id=1;
     const username=req.body.username;
     const email = req.body.email;
     const password=req.body.password;
@@ -79,25 +79,26 @@ app.post("/register",async (req,res)=>{
     );
    
    if(checkresult.rows.length>0){
-    res.send("<h1>username already exists.Try another</h1>");
+    res.render("register.ejs",{data:"username already exists."});
    }
    
    else{
     // const result= 
     await db.query(
-        "INSERT INTO users (tusername,tpassword,email,age,weight,height,gender,bmi) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)",
+        "INSERT INTO users (tusername,tpassword,email,age,weight,height,gender,bmi,user_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
         // "INSERT INTO users (tusername,tpassword) VALUES ($1,$2)",
-        [username,password,email,age,weight,height,gender,bmi]
+        [username,password,email,age,weight,height,gender,bmi,user_id]
         
     );
-    console.log("HERE!!!!!");
+    res.redirect("/login");
     // console.log("result:",result);
     }
     }catch(err){
         console.log(err);
+        res.send("<h1>Error connecting to database</h1>")
 
     }
-    res.send("<h1>done</h1>");//render the next oage after email
+    // res.send("<h1>done</h1>");//render the next oage after email
 
 })
 
