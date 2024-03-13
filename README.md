@@ -16,7 +16,6 @@ Features:
 
 Tech Stack:
 1.Expressjs
-2.MongoDB
-3.SQL
-4.EJS
-5.CSS
+2.SQL
+3.EJS
+4.CSS
