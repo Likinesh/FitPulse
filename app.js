@@ -1,7 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
-import bcrypt from "bcrypt";
 import {dirname} from "path";
 import {fileURLToPath} from "url";
 const _dirname =dirname(fileURLToPath(import.meta.url));
@@ -22,7 +21,9 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
 app.set("view engine","ejs");
 
-const saltRounds=10;
+app.get("/",(req,res)=>{
+    res.render("home");
+})
 
 app.get("/login",(req,res)=>{
     res.render("login",{data:0});
@@ -52,20 +53,15 @@ app.post("/login",async (req,res)=>{
         }
 })
 
-app.get("/register",(req,res)=>{
-    res.render("register",{data:0});
+app.get("/signup",(req,res)=>{
+    res.render("signup",{data:0});
 })
 
-const user_id=1;
-app.post("/register",async (req,res)=>{
+let user;
+app.post("/signup",async (req,res)=>{
     const username=req.body.username;
     const email = req.body.email;
     const password=req.body.password;
-    const age=req.body.age;
-    const weight = req.body.weight;
-    const height=req.body.height;
-    const gender = req.body.gender;
-    const bmi=(weight*100*100)/(height*height);
     try{
     const checkresult= await db.query(
         "SELECT * FROM users WHERE tusername=$1",
@@ -73,17 +69,16 @@ app.post("/register",async (req,res)=>{
     );
    
    if(checkresult.rows.length>0){
-    res.render("register",{data:"username already exists."});
+    res.render("signup",{data:"username already exists."});
    }
    
    else{
-    // const result= 
     await db.query(
-        "INSERT INTO users (tusername,tpassword,email,age,weight,height,gender,bmi,user_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
-        [username,password,email,age,weight,height,gender,bmi,user_id]
+        "INSERT INTO users (tusername,tpassword,email) VALUES ($1,$2,$3)",
+        [username,password,email]
     );
-    user_id=user_id+1;
-    res.redirect("/login");
+    user=username;
+    res.redirect("/register");
     }
     }catch(err){
         console.log(err);
@@ -92,8 +87,32 @@ app.post("/register",async (req,res)=>{
     }
 })
 
+app.get("/register",(req,res)=>{
+    res.render("register");
+})
+app.post("/register",async(req,res)=>{
+    const age=req.body.age;
+    const weight = req.body.weight;
+    const height=req.body.height;
+    const gender = req.body.gender;
+    const bmi=(weight*100*100)/(height*height);
+    try{
+        await db.query(
+            "INSERT INTO users (age,weight,height,gender,bmi) VALUES ($1,$2,$3,$4,$5)",
+            [age,weight,height,gender,bmi]
+        );
+        user=username;
+        res.redirect("/login");
+    }
+    catch(err){
+        console.log(err);
+        res.send("<h1>Error connecting to database</h1>")
+
+    }
+})
+
 app.post("/addlog",async (req,res)=>{
-    const username=req.body.username;
+    const username=user;
     const cal=req.body.cal;
     const dur= req.body.dur;
     const activity=req.body.activity;
