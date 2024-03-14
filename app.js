@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import pg from "pg";
 import {dirname} from "path";
 import {fileURLToPath} from "url";
+const axios = require('axios');
 const _dirname =dirname(fileURLToPath(import.meta.url));
 
 const app=express();
@@ -39,11 +40,10 @@ app.post("/login",async (req,res)=>{
         );
         console.log(storedemail.rows.length);
         console.log(storedemail.rows[0]);
-        console.log("ghff");
         console.log(loginpassword);
     if(storedemail.rows.length>0){
         if(loginpassword=== storedemail.rows[0].tpassword){
-        res.render("secrets",{data:storedemail.rows[0].tusername});
+        res.render("secrets",{data:storedemail.rows[0].tusername,bmi:storedemail.rows[0].tbmi});
     }
     else{
         res.render("login",{data:"Wrong Password"})
@@ -99,13 +99,27 @@ app.get("/register",(req,res)=>{
 })
 console.log(user)
 app.post("/register",async(req,res)=>{
-    
     const tage=req.body.age;
     const tweight = req.body.weight;
     const theight=req.body.height;
     const tgender = req.body.gender;
-    const tbmi=(tweight*100*100)/(theight*theight);
-    try{ 
+    const options = {
+        method: 'GET',
+        url: 'https://fitness-calculator.p.rapidapi.com/bmi',
+        params: {
+          age: tage,
+          weight: tweight,
+          height: theight
+        },
+        headers: {
+          'X-RapidAPI-Key': '81f06e6ff8msh412817c08531a45p158f86jsn1050cfdaf157',
+          'X-RapidAPI-Host': 'fitness-calculator.p.rapidapi.com'
+        }
+      };   
+    try{
+        const response = await axios.request(options);
+        const result=response.data; 
+        const tbmi=result.bmi;
         await db.query(
             "UPDATE users SET age=$1, weight=$2, height=$3, gender=$4, bmi=$5 WHERE tusername=$6",
             [tage, tweight, theight, tgender, tbmi, user]
@@ -124,22 +138,19 @@ app.post("/register",async(req,res)=>{
 
 app.post("/addlog",async (req,res)=>{
     const username=user;
-    const cal=req.body.cal;
     const dur= req.body.dur;
     const activity=req.body.activity;
     const date=Date.now;
     try{
     await db.query(
-        "INSERT INTO data(tusername,calories,duration,activity,date) VALUES ($1,$2,$3,$4,$5)",
-        [username,cal,dur,activity,date]
+        "INSERT INTO data(tusername,duration,activity,date) VALUES ($1,$2,$3,$4)",
+        [username,dur,activity,date]
     
     );
     }
     catch(err){
         console.log(err);
         res.send("<h1>Error connecting to database</h1>")
-        
-
     }
 })
 
@@ -151,9 +162,7 @@ app.post('/sendmail',async(req,res)=>{
     let name =req.body.name;
     let mail =req.body.mail;
     let doubt = req.body.query;
-  
     let testaccount = await nodemailer.createTestAccount();
-  
     let transporter = await nodemailer.createTransport({
       host: "sandbox.smtp.mailtrap.io",
       port: 2525,
