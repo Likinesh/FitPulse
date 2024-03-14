@@ -17,7 +17,7 @@ const db=new pg.Client({
     user:"postgres",
     host:"localhost",
     database:"users",
-    password:"likith",
+    password:"postgres",
 });
 db.connect(console.log("DataBase connected"));
 
@@ -29,7 +29,7 @@ app.get("/",(req,res)=>{
     res.render("home");
 })
 
-let user=null;
+var user=null;
 app.get("/login",(req,res)=>{
     res.render("login",{data:0});
 })
@@ -49,6 +49,7 @@ app.post("/login",async (req,res)=>{
     if(storedemail.rows.length>0){ 
     if(loginpassword=== storedemail.rows[0].tpassword){
         user=storedemail.rows[0].tusername;
+        console.log(user)
         res.render("secrets",{data:user,bmi:storedemail.rows[0].tbmi});
     }
     else{
@@ -140,20 +141,23 @@ app.post("/register",async(req,res)=>{
 
 app.get("/user",async(req,res)=>{
     try{
+        console.log(user);
         const result= await db.query(
             "SELECT * FROM users WHERE tusername=$1",
             [user]
         );
         const data={
-            "user_name":user,
+            "user_name":result.rows[0].tusername,
             "user_age":result.rows[0].age,
             "user_weight":result.rows[0].weight,
             "user_height":result.rows[0].height,
             "user_gender":result.rows[0].gender
         }
-        const options = {
-            method: 'GET',
-            url: 'https://fitness-calculator.p.rapidapi.com/bmi',
+            // const response=await axios.get{
+
+        // }
+        const instance = axios.create({
+            baseURL: 'https://fitness-calculator.p.rapidapi.com',
             params: {
               age: result.rows[0].age,
               weight: result.rows[0].weight,
@@ -162,11 +166,13 @@ app.get("/user",async(req,res)=>{
             headers: {
               'X-RapidAPI-Key': '81f06e6ff8msh412817c08531a45p158f86jsn1050cfdaf157',
               'X-RapidAPI-Host': 'fitness-calculator.p.rapidapi.com'
-            }
-          };   
-        const response = await axios.request(options);
-        const result1=response.data;
-    console.log(data);
+            },
+          });
+          var result1; 
+          instance.get('/bmi')
+            .then(response => {result1=response.data})
+            .catch(error => console.error('Error fetching data:', error));
+    // console.log(data);
     res.render("user",{data:data,api:result1});
     }
     catch(err){
