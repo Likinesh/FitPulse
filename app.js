@@ -12,7 +12,7 @@ const db=new pg.Client({
     user:"postgres",
     host:"localhost",
     database:"users",
-    password:"postgres",
+    password:"likhith",
     port:5432,
 });
 db.connect(console.log("DataBase connected"));
@@ -38,6 +38,9 @@ app.post("/login",async (req,res)=>{
         [loginemail]
         );
         console.log(storedemail.rows.length);
+        console.log(storedemail.rows[0]);
+        console.log("ghff");
+        console.log(loginpassword);
     if(storedemail.rows.length>0){
         if(loginpassword=== storedemail.rows[0].tpassword){
         res.render("secrets",{data:storedemail.rows[0].tusername});
@@ -54,6 +57,9 @@ app.post("/login",async (req,res)=>{
         }
 })
 
+app.get("/secrets",(req,res)=>{
+    res.render("secrets.ejs");
+})
 app.get("/signup",(req,res)=>{
     res.render("signup",{data:0});
 })
