@@ -12,7 +12,7 @@ const db=new pg.Client({
     user:"postgres",
     host:"localhost",
     database:"users",
-    password:"likhith",
+    password:"postgres",
     port:5432,
 });
 db.connect(console.log("DataBase connected"));
@@ -33,14 +33,14 @@ app.post("/login",async (req,res)=>{
         const loginemail=req.body.email;
         const loginpassword=req.body.password;
         try{
-        const storedusername= await db.query(
+        const storedemail= await db.query(
         "SELECT * FROM users WHERE email= $1",
         [loginemail]
         );
-        console.log(storedusername.rows.length);
-    if(storedusername.rows.length>0){
-        if(loginpassword=== storedusername.rows[0].tpassword){
-        res.render("secrets",{data:storedusername.rows[0].tusername});
+        console.log(storedemail.rows.length);
+    if(storedemail.rows.length>0){
+        if(loginpassword=== storedemail.rows[0].tpassword){
+        res.render("secrets",{data:storedemail.rows[0].tusername});
     }
     else{
         res.render("login",{data:"Wrong Password"})
