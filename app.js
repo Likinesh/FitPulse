@@ -12,7 +12,7 @@ const db=new pg.Client({
     user:"postgres",
     host:"localhost",
     database:"users",
-    password:"likith",
+    password:"postgres",
     port:5432,
 });
 db.connect(console.log("DataBase connected"));
@@ -34,9 +34,10 @@ app.post("/login",async (req,res)=>{
         const loginpassword=req.body.password;
         try{
         const storedusername= await db.query(
-        "SELECT * FROM users WHERE email= $1",
+        "SELECT * FROM users WHERE tusername= $1",
         [loginusername]
         );
+        console.log(storedusername.rows.length);
     if(storedusername.rows.length>0){
         if(loginpassword=== storedusername.rows[0].tpassword){
         res.render("secrets",{data:loginusername});
@@ -57,7 +58,7 @@ app.get("/signup",(req,res)=>{
     res.render("signup",{data:0});
 })
 
-let user;
+let user=null;
 app.post("/signup",async (req,res)=>{
     const username=req.body.username;
     const email = req.body.email;
@@ -90,18 +91,28 @@ app.post("/signup",async (req,res)=>{
 app.get("/register",(req,res)=>{
     res.render("register");
 })
+console.log(user)
 app.post("/register",async(req,res)=>{
-    const age=req.body.age;
-    const weight = req.body.weight;
-    const height=req.body.height;
-    const gender = req.body.gender;
-    const bmi=(weight*100*100)/(height*height);
-    try{
+    
+    const tage=req.body.age;
+    const tweight = req.body.weight;
+    const theight=req.body.height;
+    const tgender = req.body.gender;
+    const tbmi=(tweight*100*100)/(theight*theight);
+    try{ 
+        // console.log(tage);
+    
         await db.query(
-            "INSERT INTO users (age,weight,height,gender,bmi) VALUES ($1,$2,$3,$4,$5)",
-            [age,weight,height,gender,bmi]
+            "UPDATE users SET age=$1, weight=$2, height=$3, gender=$4, bmi=$5 WHERE tusername=$6",
+            [tage, tweight, theight, tgender, tbmi, user]
+            // "INSERT INTO users (age,weight,height,gender,bmi) VALUES ($1,$2,$3,$4,$5) WHERE tusername=$6",
+            // [age,weight,height,gender,bmi,user]
         );
-        user=username;
+        // console.log(tage);
+        
+        
+        // console.log(logg.rows);
+        // c
         res.redirect("/login");
     }
     catch(err){
