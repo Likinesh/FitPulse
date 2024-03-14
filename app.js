@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import pg from "pg";
 import {dirname} from "path";
 import {fileURLToPath} from "url";
-const axios = require('axios');
+import axios from "axios"
 const _dirname =dirname(fileURLToPath(import.meta.url));
 import morgan from "morgan";
 
@@ -30,6 +30,7 @@ app.get("/",(req,res)=>{
     res.render("home");
 })
 
+let user=null;
 app.get("/login",(req,res)=>{
     res.render("login",{data:0});
 })
@@ -46,9 +47,10 @@ app.post("/login",async (req,res)=>{
         console.log(storedemail.rows.length);
         console.log(storedemail.rows[0]);
         console.log(loginpassword);
-    if(storedemail.rows.length>0){
-        if(loginpassword=== storedemail.rows[0].tpassword){
-        res.render("secrets",{data:storedemail.rows[0].tusername,bmi:storedemail.rows[0].tbmi});
+    if(storedemail.rows.length>0){ 
+    if(loginpassword=== storedemail.rows[0].tpassword){
+        user=storedemail.rows[0].tusername;
+        res.render("secrets",{data:user,bmi:storedemail.rows[0].tbmi});
     }
     else{
         res.render("login",{data:"Wrong Password"})
@@ -69,7 +71,6 @@ app.get("/signup",(req,res)=>{
     res.render("signup",{data:0});
 })
 
-let user=null;
 app.post("/signup",async (req,res)=>{
     const username=req.body.username;
     const email = req.body.email;
@@ -92,10 +93,10 @@ app.post("/signup",async (req,res)=>{
     user=username;
     res.redirect("/register");
     }
-    }catch(err){
+    }
+    catch(err){
         console.log(err);
         res.send("<h1>Error connecting to database</h1>")
-
     }
 })
 
@@ -128,8 +129,6 @@ app.post("/register",async(req,res)=>{
         await db.query(
             "UPDATE users SET age=$1, weight=$2, height=$3, gender=$4, bmi=$5 WHERE tusername=$6",
             [tage, tweight, theight, tgender, tbmi, user]
-            // "INSERT INTO users (age,weight,height,gender,bmi) VALUES ($1,$2,$3,$4,$5) WHERE tusername=$6",
-            // [age,weight,height,gender,bmi,user]
         );
         
         res.redirect("/login");
@@ -137,9 +136,47 @@ app.post("/register",async(req,res)=>{
     catch(err){
         console.log(err);
         res.send("<h1>Error connecting to database</h1>")
-
     }
 })
+
+app.get("/user",async(req,res)=>{
+    try{
+        const result= await db.query(
+            "SELECT * FROM users WHERE tusername=$1",
+            [user]
+        );
+
+        const data={
+            "user_name":user,
+            "user_age":result.rows[0].age,
+            "user_weight":result.rows[0].weight,
+            "user_height":result.rows[0].height,
+            "user_gender":result.rows[0].gender
+        }
+        const options = {
+            method: 'GET',
+            url: 'https://fitness-calculator.p.rapidapi.com/bmi',
+            params: {
+              age: data.user_age,
+              weight: data.user_weight,
+              height: data.user_age
+            },
+            headers: {
+              'X-RapidAPI-Key': '81f06e6ff8msh412817c08531a45p158f86jsn1050cfdaf157',
+              'X-RapidAPI-Host': 'fitness-calculator.p.rapidapi.com'
+            }
+          };   
+        const response = await axios.request(options);
+        const result1=response.data;
+    console.log(data);
+    res.render("user",{data:data,bmi:result1});
+    }
+    catch(err){
+        console.log(err);
+        res.send("<h1>Error connecting to database</h1>")
+    }
+})
+    
 
 app.post("/addlog",async (req,res)=>{
     const username=user;
