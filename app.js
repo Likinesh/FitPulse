@@ -1,10 +1,9 @@
 import express from "express";
 import bodyParser from "body-parser";
-import bcrypt from "bcrypt";
 import pg from "pg";
 import {dirname} from "path";
 import {fileURLToPath} from "url";
-const axios = require('axios');
+import axios from "axios"
 const _dirname =dirname(fileURLToPath(import.meta.url));
 import morgan from "morgan";
 
@@ -18,7 +17,7 @@ const db=new pg.Client({
     user:"postgres",
     host:"localhost",
     database:"users",
-    password:"likhith",
+    password:"postgres",
     port:5432,
 });
 db.connect(console.log("DataBase connected"));
@@ -141,35 +140,35 @@ app.post("/register",async(req,res)=>{
 })
 
 app.get("/user",async(req,res)=>{
-    const options = {
-        method: 'GET',
-        url: 'https://fitness-calculator.p.rapidapi.com/bmi',
-        params: {
-          age: tage,
-          weight: tweight,
-          height: theight
-        },
-        headers: {
-          'X-RapidAPI-Key': '81f06e6ff8msh412817c08531a45p158f86jsn1050cfdaf157',
-          'X-RapidAPI-Host': 'fitness-calculator.p.rapidapi.com'
-        }
-      };   
     try{
+        const result= await db.query(
+            "SELECT * FROM users WHERE tusername=$1",
+            [user]
+        );
+
+        const data={
+            "user_name":user,
+            "user_age":result.rows[0].age,
+            "user_weight":result.rows[0].weight,
+            "user_height":result.rows[0].height,
+            "user_gender":result.rows[0].gender
+        }
+        const options = {
+            method: 'GET',
+            url: 'https://fitness-calculator.p.rapidapi.com/bmi',
+            params: {
+              age: data.user_age,
+              weight: data.user_weight,
+              height: data.user_age
+            },
+            headers: {
+              'X-RapidAPI-Key': '81f06e6ff8msh412817c08531a45p158f86jsn1050cfdaf157',
+              'X-RapidAPI-Host': 'fitness-calculator.p.rapidapi.com'
+            }
+          };   
         const response = await axios.request(options);
         const result1=response.data;
-    const result= await db.query(
-        "SELECT * FROM users WHERE tusername=$1",
-        [user]
-    );
-    
-    const data={
-        "user_name":user,
-        "user_weight":result.rows[0].weight,
-        "user_height":result.rows[0].height,
-        "user_bmi":result.rows[0].bmi,
-        "user_gender":result.rows[0].gender
-    }
-    console.group(data);
+    console.log(data);
     res.render("user",{data:data,bmi:result1});
     }
     catch(err){
