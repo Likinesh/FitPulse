@@ -30,7 +30,7 @@ app.get("/login",(req,res)=>{
 })
 
 app.post("/login",async (req,res)=>{
-        const loginusername=req.body.username;
+        const loginemail=req.body.email;
         const loginpassword=req.body.password;
         try{
         const storedusername= await db.query(
@@ -100,8 +100,6 @@ app.post("/register",async(req,res)=>{
     const tgender = req.body.gender;
     const tbmi=(tweight*100*100)/(theight*theight);
     try{ 
-        // console.log(tage);
-    
         await db.query(
             "UPDATE users SET age=$1, weight=$2, height=$3, gender=$4, bmi=$5 WHERE tusername=$6",
             [tage, tweight, theight, tgender, tbmi, user]
