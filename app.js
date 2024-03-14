@@ -137,11 +137,26 @@ app.post("/register",async(req,res)=>{
     catch(err){
         console.log(err);
         res.send("<h1>Error connecting to database</h1>")
-
     }
 })
 
 app.get("/user",async(req,res)=>{
+    const options = {
+        method: 'GET',
+        url: 'https://fitness-calculator.p.rapidapi.com/bmi',
+        params: {
+          age: tage,
+          weight: tweight,
+          height: theight
+        },
+        headers: {
+          'X-RapidAPI-Key': '81f06e6ff8msh412817c08531a45p158f86jsn1050cfdaf157',
+          'X-RapidAPI-Host': 'fitness-calculator.p.rapidapi.com'
+        }
+      };   
+    try{
+        const response = await axios.request(options);
+        const result1=response.data;
     const result= await db.query(
         "SELECT * FROM users WHERE tusername=$1",
         [user]
@@ -155,8 +170,13 @@ app.get("/user",async(req,res)=>{
         "user_gender":result.rows[0].gender
     }
     console.group(data);
-    res.render("user",{data:data});
-      })
+    res.render("user",{data:data,bmi:result1});
+    }
+    catch(err){
+        console.log(err);
+        res.send("<h1>Error connecting to database</h1>")
+    }
+})
     
 
 app.post("/addlog",async (req,res)=>{
