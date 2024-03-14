@@ -18,7 +18,6 @@ const db=new pg.Client({
     host:"localhost",
     database:"users",
     password:"likith",
-    port:5432,
 });
 db.connect(console.log("DataBase connected"));
 
@@ -145,7 +144,6 @@ app.get("/user",async(req,res)=>{
             "SELECT * FROM users WHERE tusername=$1",
             [user]
         );
-
         const data={
             "user_name":user,
             "user_age":result.rows[0].age,
@@ -157,9 +155,9 @@ app.get("/user",async(req,res)=>{
             method: 'GET',
             url: 'https://fitness-calculator.p.rapidapi.com/bmi',
             params: {
-              age: data.user_age,
-              weight: data.user_weight,
-              height: data.user_age
+              age: result.rows[0].age,
+              weight: result.rows[0].weight,
+              height: result.rows[0].height
             },
             headers: {
               'X-RapidAPI-Key': '81f06e6ff8msh412817c08531a45p158f86jsn1050cfdaf157',
@@ -169,7 +167,7 @@ app.get("/user",async(req,res)=>{
         const response = await axios.request(options);
         const result1=response.data;
     console.log(data);
-    res.render("user",{data:data,bmi:result1});
+    res.render("user",{data:data,api:result1});
     }
     catch(err){
         console.log(err);
