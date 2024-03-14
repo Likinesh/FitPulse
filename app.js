@@ -108,11 +108,7 @@ app.post("/register",async(req,res)=>{
             // "INSERT INTO users (age,weight,height,gender,bmi) VALUES ($1,$2,$3,$4,$5) WHERE tusername=$6",
             // [age,weight,height,gender,bmi,user]
         );
-        // console.log(tage);
         
-        
-        // console.log(logg.rows);
-        // c
         res.redirect("/login");
     }
     catch(err){
