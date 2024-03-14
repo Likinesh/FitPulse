@@ -34,13 +34,13 @@ app.post("/login",async (req,res)=>{
         const loginpassword=req.body.password;
         try{
         const storedusername= await db.query(
-        "SELECT * FROM users WHERE tusername= $1",
-        [loginusername]
+        "SELECT * FROM users WHERE email= $1",
+        [loginemail]
         );
         console.log(storedusername.rows.length);
     if(storedusername.rows.length>0){
         if(loginpassword=== storedusername.rows[0].tpassword){
-        res.render("secrets",{data:loginusername});
+        res.render("secrets",{data:storedusername.rows[0].tusername});
     }
     else{
         res.render("login",{data:"Wrong Password"})
