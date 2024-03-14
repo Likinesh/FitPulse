@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
+import bcrypt from "bcrypt";
 import pg from "pg";
 import {dirname} from "path";
 import {fileURLToPath} from "url";
@@ -25,6 +26,7 @@ app.get("/",(req,res)=>{
     res.render("home");
 })
 
+let user=null;
 app.get("/login",(req,res)=>{
     res.render("login",{data:0});
 })
@@ -38,9 +40,10 @@ app.post("/login",async (req,res)=>{
         [loginemail]
         );
         console.log(storedemail.rows.length);
-    if(storedemail.rows.length>0){
-        if(loginpassword=== storedemail.rows[0].tpassword){
-        res.render("secrets",{data:storedemail.rows[0].tusername});
+    if(storedemail.rows.length>0){ 
+    if(loginpassword=== storedemail.rows[0].tpassword){
+        user=storedemail.rows[0].tusername;
+        res.render("secrets",{data:user});
     }
     else{
         res.render("login",{data:"Wrong Password"})
@@ -58,7 +61,6 @@ app.get("/signup",(req,res)=>{
     res.render("signup",{data:0});
 })
 
-let user=null;
 app.post("/signup",async (req,res)=>{
     const username=req.body.username;
     const email = req.body.email;
@@ -81,10 +83,10 @@ app.post("/signup",async (req,res)=>{
     user=username;
     res.redirect("/register");
     }
-    }catch(err){
+    }
+    catch(err){
         console.log(err);
         res.send("<h1>Error connecting to database</h1>")
-
     }
 })
 
@@ -103,8 +105,6 @@ app.post("/register",async(req,res)=>{
         await db.query(
             "UPDATE users SET age=$1, weight=$2, height=$3, gender=$4, bmi=$5 WHERE tusername=$6",
             [tage, tweight, theight, tgender, tbmi, user]
-            // "INSERT INTO users (age,weight,height,gender,bmi) VALUES ($1,$2,$3,$4,$5) WHERE tusername=$6",
-            // [age,weight,height,gender,bmi,user]
         );
         
         res.redirect("/login");
@@ -115,6 +115,24 @@ app.post("/register",async(req,res)=>{
 
     }
 })
+
+app.get("/user",async(req,res)=>{
+    const result= await db.query(
+        "SELECT * FROM users WHERE tusername=$1",
+        [user]
+    );
+    
+    const data={
+        "user_name":user,
+        "user_weight":result.rows[0].weight,
+        "user_height":result.rows[0].height,
+        "user_bmi":result.rows[0].bmi,
+        "user_gender":result.rows[0].gender
+    }
+    console.group(data);
+    res.render("user",{data:data});
+      })
+    
 
 app.post("/addlog",async (req,res)=>{
     const username=user;
@@ -131,9 +149,7 @@ app.post("/addlog",async (req,res)=>{
     }
     catch(err){
         console.log(err);
-        res.send("<h1>Error connecting to database</h1>")
-        
-
+        res.send("<h1>Error connecting to database</h1>");
     }
 })
 
