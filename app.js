@@ -108,28 +108,12 @@ app.post("/register",async(req,res)=>{
     const tweight = req.body.weight;
     const theight=req.body.height;
     const tgender = req.body.gender;
-    const options = {
-        method: 'GET',
-        url: 'https://fitness-calculator.p.rapidapi.com/bmi',
-        params: {
-          age: tage,
-          weight: tweight,
-          height: theight
-        },
-        headers: {
-          'X-RapidAPI-Key': '81f06e6ff8msh412817c08531a45p158f86jsn1050cfdaf157',
-          'X-RapidAPI-Host': 'fitness-calculator.p.rapidapi.com'
-        }
-      };   
+    const tbmi=(tweight*100*100)/(theight*theight);
     try{
-        const response = await axios.request(options);
-        const result=response.data; 
-        const tbmi=result.bmi;
         await db.query(
             "UPDATE users SET age=$1, weight=$2, height=$3, gender=$4, bmi=$5 WHERE tusername=$6",
             [tage, tweight, theight, tgender, tbmi, user]
         );
-        
         res.redirect("/login");
     }
     catch(err){
