@@ -5,6 +5,10 @@ import {dirname} from "path";
 import {fileURLToPath} from "url";
 const axios = require('axios');
 const _dirname =dirname(fileURLToPath(import.meta.url));
+import morgan from "morgan";
+
+morgan('combined');
+
 
 const app=express();
 const port=3000; 
@@ -38,6 +42,7 @@ app.post("/login",async (req,res)=>{
         "SELECT * FROM users WHERE email= $1",
         [loginemail]
         );
+        console.log(storedemail.rows);
         console.log(storedemail.rows.length);
         console.log(storedemail.rows[0]);
         console.log(loginpassword);
