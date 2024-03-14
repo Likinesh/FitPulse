@@ -138,6 +138,7 @@ app.post("/addlog",async (req,res)=>{
     catch(err){
         console.log(err);
         res.send("<h1>Error connecting to database</h1>")
+        
 
     }
 })
