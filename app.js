@@ -16,7 +16,7 @@ const db=new pg.Client({
     user:"postgres",
     host:"localhost",
     database:"users",
-    password:"postgres",
+    password:"likith",
 });
 db.connect(console.log("DataBase connected"));
 
@@ -179,61 +179,55 @@ app.post("/update-info",async(req,res)=>{
         console.log(err);
         res.send("<h1>Error connecting to database</h1>")
     }
-})   
-
-
+})
+app.get("/addlog",async(req,res)=>{
+    try{
+        const options = {
+            method: 'GET',
+            url: 'https://api.api-ninjas.com/v1/caloriesburnedactivities',
+            headers: {
+                'X-API-Key': 'tRtAPplmWukhtiPoolga5Q==5p7NOagUHP5IloQa'
+            }
+          };
+        const response = await axios.request(options);
+        const result=response.data;
+        res.render("addlog",{act:result,data:user_val})
+    }
+    catch(err){
+        console.log(err);
+        res.send("<h1>Error connecting to API</h1>")
+    }
+})
 app.post("/addlog",async (req,res)=>{
     const username=user;
-    const dur= req.body.dur;
+    const dur= req.body.duration;
     const user_activity=req.body.activity;
-    const date=Date.now;
-    var cal;
+    let date=req.body.date;
+    let cal;
     try{
+        const options1= {
+            method: 'GET',
+            url: 'https://api.api-ninjas.com/v1/caloriesburned?activity='+user_activity,
+            headers: {
+                'X-API-Key': 'tRtAPplmWukhtiPoolga5Q==5p7NOagUHP5IloQa'
+            }
+          };
+        const response = await axios.request(options1);
+        const result=response.data;
+        if(date){
+            data=Date.now
+        }
+        cal=(result[0].calories_per_hour)*(dur/60);
     await db.query( 
         "INSERT INTO workout(username,duration,act_date,date,cal) VALUES ($1,$2,$3,$4,$5)",
-        [username,dur,user_activity,date,cal]
-    
+        [username,dur,user_activity,date,cal]  
     );
-    }
-    
+    }  
     catch(err){
         console.log(err);
         res.send("<h1>Error connecting to database</h1>")
     }
 })
-
-app.get("/secrets",async(req,res)=>{
-    try{
-          const out=await db.query(
-        "SELECT FROM workout WHERE username=$1",
-         [user]
-          )
-
-     const data={
-        "act_date":out.rows[0].act_date,
-        "user_activity":out.rows[0].activity,
-        "user_duration":out.rows[0].duration,
-        "calories":out.rows[0].cal
-     }
-     res.render("secrets",{data:data});
-     }
-     catch(err){
-        console.log("Error occured in connecting database:",err);
-        res.send("error while connecting database.");
-     }
-
-})
-// app.get("/",async (req,res)=>{
-// try{
-// const response =await axios.get(
-//     `https://api.api-ninjas.com/v1/caloriesburnedactivities?activity=${user_activity}`
-// );
-// const result2=response.data;
-// res.render("/addlog",{data:result2})
-// }catch(err){
-//     console.log("Failed to mstch your request:",err.message)
-// }
-// })
 app.get("/contact",(req,res)=>{
     res.render("contact")
 })
