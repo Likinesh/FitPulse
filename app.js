@@ -7,12 +7,11 @@ import axios from "axios"
 const _dirname =dirname(fileURLToPath(import.meta.url));
 import morgan from "morgan";
 
-morgan('combined');
-
-
 const app=express();
 const port=3000; 
 
+app.use(morgan('combined'));
+morgan('tiny')
 const db=new pg.Client({
     user:"postgres",
     host:"localhost",
