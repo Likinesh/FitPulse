@@ -6,13 +6,17 @@
 </head>
 <body>
     <h1>DASHBOARD</h1>
+    <form action="/update" method="post">
+        <button type="submit">Update Info</button>
+    </form>
     <h3>NAME: <%= data.user_name %></h3>
+    <h3>EMAIL: <%= data.user_mail %></h3>
     <h3>AGE: <%= data.user_age %></h3>
     <h3>GENDER: <%= data.user_gender %></h3>
     <h3>WEIGHT: <%= data.user_weight %>kg</h3>
     <h3>HEIGHT: <%= data.user_height %>cm</h3>
-    <h3>BMI: <%= api.bmi %></h3>
-    <h3>STATUS: <%= api.health %></h3>
-    <h3>HEALTHY BMI RANGE: <%= api.health_bmi_range %></h3>
+    <h3>BMI: <%= data.user_bmi %></h3>
+    <h3>STATUS: <%= data.user_status %></h3>
+    <h3>HEALTHY BMI RANGE: <%= data.user_range %></h3>
 </body>
 </html>

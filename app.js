@@ -62,7 +62,9 @@ app.post("/login",async (req,res)=>{
             console.log(err);
         }
 })
-
+app.post("/update",(req,res)=>{
+    res.render("update");
+})
 app.get("/secrets",(req,res)=>{
     res.render("secrets.ejs");
 })
@@ -128,37 +130,61 @@ app.get("/user",async(req,res)=>{
             "SELECT * FROM users WHERE tusername=$1",
             [user]
         );
+        var status,range;
+        const x=result.rows[0].bmi;
+        if(x<18.5){
+            status="You are currently Underage";
+            range="BMI range: 0-18.5"
+        }
+        else if(x>=18.5 && x<24.9){
+            status="You are Healthy";
+            range="BMI range: 18.5-24.9"
+        }
+        else if(x>=25 && x<29.9){
+            status="You are currently Overage";
+            range="BMI range: 25-29.9"
+        }
+        else if(x>=30){
+            status="You have obesity";
+            range="BMI range: 30 or higher"
+        }
         const data={
             "user_name":user,
             "user_age":result.rows[0].age,
+            "user_mail":result.rows[0].email,
             "user_weight":result.rows[0].weight,
             "user_height":result.rows[0].height,
-            "user_gender":result.rows[0].gender
+            "user_gender":result.rows[0].gender,
+            "user_bmi":result.rows[0].bmi,
+            "user_status":status,
+            "user_range":range
         }
-        const options = {
-            method: 'GET',
-            url: 'https://fitness-calculator.p.rapidapi.com/bmi',
-            params: {
-              age: result.rows[0].age,
-              weight: result.rows[0].weight,
-              height: result.rows[0].height
-            },
-            headers: {
-              'X-RapidAPI-Key': '81f06e6ff8msh412817c08531a45p158f86jsn1050cfdaf157',
-              'X-RapidAPI-Host': 'fitness-calculator.p.rapidapi.com'
-            }
-          };   
-        const response = await axios.request(options);
-        const result1=response.data;
     console.log(data);
-    res.render("user",{data:data,api:result1});
+    res.render("user",{data:data});
     }
     catch(err){
         console.log(err);
         res.send("<h1>Error connecting to database</h1>")
     }
 })
-    
+app.post("/update-info",async(req,res)=>{
+    const tage=req.body.age;
+    const tweight = req.body.weight;
+    const theight=req.body.height;
+    const tgender = req.body.gender;
+    const tbmi=(tweight*100*100)/(theight*theight);
+    try{
+        await db.query(
+            "UPDATE users SET age=$1, weight=$2, height=$3, gender=$4, bmi=$5 WHERE tusername=$6",
+            [tage, tweight, theight, tgender, tbmi, user]
+        );
+        res.redirect("/user");
+    }
+    catch(err){
+        console.log(err);
+        res.send("<h1>Error connecting to database</h1>")
+    }
+})   
 
 app.post("/addlog",async (req,res)=>{
     const username=user;
