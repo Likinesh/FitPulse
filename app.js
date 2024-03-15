@@ -17,7 +17,7 @@ const db=new pg.Client({
     user:"postgres",
     host:"localhost",
     database:"users",
-    password:"likith",
+    password:"postgres",
 });
 db.connect(console.log("DataBase connected"));
 
@@ -121,6 +121,7 @@ app.post("/register",async(req,res)=>{
 })
 app.get("/user",async(req,res)=>{
     try{
+        console.log(user);
         const result= await db.query(
             "SELECT * FROM users WHERE tusername=$1",
             [user]
@@ -144,7 +145,7 @@ app.get("/user",async(req,res)=>{
             range="BMI range: 30 or higher"
         }
         const data={
-            "user_name":user,
+            "user_name":result.rows[0].tusername,
             "user_age":result.rows[0].age,
             "user_mail":result.rows[0].email,
             "user_weight":result.rows[0].weight,
