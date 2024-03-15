@@ -181,23 +181,60 @@ app.post("/update-info",async(req,res)=>{
         res.send("<h1>Error connecting to database</h1>")
     }
 })   
+
+
 app.post("/addlog",async (req,res)=>{
     const username=user;
     const dur= req.body.dur;
-    const activity=req.body.activity;
+    const user_activity=req.body.activity;
     const date=Date.now;
+    var cal;
     try{
-    await db.query(
-        "INSERT INTO data(tusername,duration,activity,date) VALUES ($1,$2,$3,$4)",
-        [username,dur,activity,date]
+    await db.query( 
+        "INSERT INTO workout(username,duration,act_date,date,cal) VALUES ($1,$2,$3,$4,$5)",
+        [username,dur,user_activity,date,cal]
     
     );
     }
+    
     catch(err){
         console.log(err);
         res.send("<h1>Error connecting to database</h1>")
     }
 })
+
+app.get("/secrets",async(req,res)=>{
+    try{
+          const out=await db.query(
+        "SELECT FROM workout WHERE username=$1",
+         [user]
+          )
+
+     const data={
+        "act_date":out.rows[0].act_date,
+        "user_activity":out.rows[0].activity,
+        "user_duration":out.rows[0].duration,
+        "calories":out.rows[0].cal
+     }
+     res.render("secrets",{data:data});
+     }
+     catch(err){
+        console.log("Error occured in connecting database:",err);
+        res.send("error while connecting database.");
+     }
+
+})
+// app.get("/",async (req,res)=>{
+// try{
+// const response =await axios.get(
+//     `https://api.api-ninjas.com/v1/caloriesburnedactivities?activity=${user_activity}`
+// );
+// const result2=response.data;
+// res.render("/addlog",{data:result2})
+// }catch(err){
+//     console.log("Failed to mstch your request:",err.message)
+// }
+// })
 app.get("/contact",(req,res)=>{
     res.render("contact")
 })
