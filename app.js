@@ -25,15 +25,13 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
 app.set("view engine","ejs");
 
+let user=null,user_val=0;
 app.get("/",(req,res)=>{
-    res.render("home");
+    res.render("home",{data:user_val});
 })
-
-let user=null;
 app.get("/login",(req,res)=>{
     res.render("login",{data:0});
 })
-
 app.post("/login",async (req,res)=>{
         const loginemail=req.body.email;
         const loginpassword=req.body.password;
@@ -43,13 +41,13 @@ app.post("/login",async (req,res)=>{
         [loginemail]
         );
         console.log(storedemail.rows);
-        console.log(storedemail.rows.length);
         console.log(storedemail.rows[0]);
         console.log(loginpassword);
     if(storedemail.rows.length>0){ 
     if(loginpassword=== storedemail.rows[0].tpassword){
         user=storedemail.rows[0].tusername;
-        res.render("secrets",{data:user,bmi:storedemail.rows[0].tbmi});
+        user_val=storedemail.rows[0].tusername;
+        res.render("home",{data:user_val});
     }
     else{
         res.render("login",{data:"Wrong Password"})
@@ -71,7 +69,6 @@ app.get("/secrets",(req,res)=>{
 app.get("/signup",(req,res)=>{
     res.render("signup",{data:0});
 })
-
 app.post("/signup",async (req,res)=>{
     const username=req.body.username;
     const email = req.body.email;
@@ -100,7 +97,6 @@ app.post("/signup",async (req,res)=>{
         res.send("<h1>Error connecting to database</h1>")
     }
 })
-
 app.get("/register",(req,res)=>{
     res.render("register");
 })
@@ -123,7 +119,6 @@ app.post("/register",async(req,res)=>{
         res.send("<h1>Error connecting to database</h1>")
     }
 })
-
 app.get("/user",async(req,res)=>{
     try{
         const result= await db.query(
@@ -185,7 +180,6 @@ app.post("/update-info",async(req,res)=>{
         res.send("<h1>Error connecting to database</h1>")
     }
 })   
-
 app.post("/addlog",async (req,res)=>{
     const username=user;
     const dur= req.body.dur;
@@ -203,11 +197,9 @@ app.post("/addlog",async (req,res)=>{
         res.send("<h1>Error connecting to database</h1>")
     }
 })
-
 app.get("/contact",(req,res)=>{
     res.render("contact")
 })
-
 app.post('/sendmail',async(req,res)=>{
     let name =req.body.name;
     let mail =req.body.mail;
