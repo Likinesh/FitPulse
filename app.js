@@ -16,7 +16,7 @@ const db=new pg.Client({
     user:"postgres",
     host:"localhost",
     database:"users",
-    password:"likith",
+    password:"postgres",
 });
 db.connect(console.log("DataBase connected"));
 
@@ -42,8 +42,8 @@ app.post("/login",async (req,res)=>{
         console.log(storedemail.rows);
         console.log(storedemail.rows[0]);
         console.log(loginpassword);
-    if(storedemail.rows.length>0){ 
-    if(loginpassword=== storedemail.rows[0].tpassword){
+        if(storedemail.rows.length>0){ 
+        if(loginpassword=== storedemail.rows[0].tpassword){
         user=storedemail.rows[0].tusername;
         user_val=storedemail.rows[0].tusername;
         res.render("home",{data:user_val});
@@ -121,10 +121,21 @@ app.post("/register",async(req,res)=>{
 app.get("/user",async(req,res)=>{
     try{
         console.log(user);
+        let log_user=0;
         const result= await db.query(
             "SELECT * FROM users WHERE tusername=$1",
             [user]
         );
+        const log=await db.query(
+            "SELECT * FROM workout WHERE username=$1",
+            [user]
+        );
+        if(log.rows.length>0){
+            log_user=log;
+        }
+        else{
+            log_user=0;
+        }
         var status,range;
         const x=result.rows[0].bmi;
         if(x<18.5){
@@ -155,7 +166,7 @@ app.get("/user",async(req,res)=>{
             "user_range":range
         }
     console.log(data);
-    res.render("user",{data:data});
+    res.render("user",{data:data,log:log_user});
     }
     catch(err){
         console.log(err);
@@ -199,7 +210,7 @@ app.get("/addlog",async(req,res)=>{
     }
 })
 app.post("/addlog",async (req,res)=>{
-    const username=user;
+    const username=user_val;
     const dur= req.body.duration;
     const user_activity=req.body.activity;
     let date=req.body.date;
@@ -214,20 +225,40 @@ app.post("/addlog",async (req,res)=>{
           };
         const response = await axios.request(options1);
         const result=response.data;
-        if(date){
-            data=Date.now
-        }
         cal=(result[0].calories_per_hour)*(dur/60);
     await db.query( 
-        "INSERT INTO workout(username,duration,act_date,date,cal) VALUES ($1,$2,$3,$4,$5)",
+        "INSERT INTO workout(username,duration,activity,date,cal) VALUES ($1,$2,$3,$4,$5)",
         [username,dur,user_activity,date,cal]  
     );
+    res.redirect("/user");
     }  
     catch(err){
         console.log(err);
         res.send("<h1>Error connecting to database</h1>")
     }
 })
+
+app.get("/log",async(req,res)=>{
+ const resul=await db.query(
+    "SELECT * FROM workout WHERE username=user",
+    [user]
+)
+res.render("user",{data:resul});
+})
+
+// app.post("/remove",async(req,res)=>{
+//     // const resul2 =await db.query(
+//     //         "SELECT * FROM workout WHERE username=user",
+//     //         [user]
+//     //     )
+//         const workout_id=resul.rows[0].workout_id;
+//        await db.query(
+//          "DELETE FROM workout WHERE workout_id=$1",
+// [workout_id]
+//        )
+//        res.render("user",{data:resul});
+// })
+
 app.get("/contact",(req,res)=>{
     res.render("contact")
 })

@@ -18,5 +18,24 @@
     <h3>BMI: <%= data.user_bmi %></h3>
     <h3>STATUS: <%= data.user_status %></h3>
     <h3><%= data.user_range %></h3>
+    <table>
+        <tr>
+        <th>Date</th>
+        <th>Activity</th>
+        <th>Duration</th>
+        <th>Calories Burnt</th>
+        <a href="/addlog">To add new exercise details</a>
+        </tr>
+        <% if (log!=0) { %>
+            <% for( let i = 0; i < log.rows.length; i++ ) { %>
+                <tr>
+                    <td><%= log.rows[i].date %></td>
+                    <td><%= log.rows[i].activity %></td>
+                    <td><%= log.rows[i].duration %></td>
+                    <td><%= log.rows[i].cal %></td>
+                </tr>
+                <% } %>
+        <% } %>
+    </table>
 </body>
 </html>
