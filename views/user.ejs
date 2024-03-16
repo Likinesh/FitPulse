@@ -102,15 +102,15 @@
 </div>
 <br>
 <a id="tablehead" href="/addlog"><button class="btn btn-dark">ADD WORK </button></a>
-    <div class="table" style="overflow-x:auto;">
+<% if (log!=0) { %>    
+<div class="table" style="overflow-x:auto;">
     <table>
         <tr>
         <th>Date</th>
         <th>Activity</th>
         <th>Duration(min)</th>
         <th>Calories Burnt</th>
-        </tr>
-        <% if (log!=0) { %>
+        </tr>  
             <% for( let i = 0; i < log.rows.length; i++ ) { %>
                 <tr>
                     <td><%= log.rows[i].date %></td>
@@ -119,9 +119,9 @@
                     <td><%= log.rows[i].cal %></td>
                 </tr>
                 <% } %>
-        <% } %>
     </table>
 </div>
+<% } %>
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>

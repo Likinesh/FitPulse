@@ -45,8 +45,9 @@ app.post("/login",async (req,res)=>{
         console.log(storedemail.rows);
         console.log(storedemail.rows[0]);
         console.log(loginpassword);
-        const storedhashpassword=storedemail.rows[0].tpassword;
+       
         if(storedemail.rows.length>0){ 
+            const storedhashpassword=storedemail.rows[0].tpassword;
             bcrypt.compare(loginpassword,storedhashpassword,(err,resu)=>{
                 if(err){
                 res.send("Error while checking hashed password");
