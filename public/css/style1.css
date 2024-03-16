@@ -7,6 +7,7 @@
     float:left;
 }
 body{
+    background-color: rgb(62, 57, 57);
     background-image: url('/img/img3.webp');
     background-repeat: no-repeat;
     background-size: cover;
@@ -18,30 +19,32 @@ body{
     z-index: -1;
 }
 .heading{
-    margin-top: 1%;
     margin-left: 6%;
 }
 #dashboard{
-    margin-top: 6%;
+    margin-top: 2%;
     margin-left: 5%;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     text-shadow: 2px 2px 5px rgb(244, 238, 238);
 }
 .dashboard{
     margin-top: .1%;
-    margin-left: 1%;
+    margin-left: 5%;
     font-size: larger;
     font-weight: bolder;
 }
+#tablehead{
+    margin-left: 12%;
+    margin-top: 1%;
+}
 
 .table{
-    margin-top: 2%;
-    margin-left: 1%;
+    margin-top: .3%;
     font-size: larger;
     font-weight: bold;
 }
 table,tr,th,td{
-    border:5px solid;
+    border:5px solid rgb(3, 0, 0);
 }
 tr:nth-child(even) {
     background-color: #f2f2f2;

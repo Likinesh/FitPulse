@@ -37,13 +37,23 @@
           <li class="nav-item">
             <a class="nav-link" href="/contact">Contact us</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/user"><%=data.user_name%></a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <%=data.user_name%>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/user">Dash Board</a></li>
+              <li><a class="dropdown-item" href="/login">Log Out</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#"></a></li>
+            </ul>
           </li> 
         </ul>
       </div>
     </div>
   </nav>
+  <br>
+  <br>
 <div class="dashboard" style="overflow-x:auto;">
   <div><h1 id="dashboard">DASHBOARD</h1></div>
   <div class="heading">
@@ -89,12 +99,10 @@
         <td><%= data.user_range %></td>
     </tr>
 </table>
-
 </div>
-   
+<br>
+<a id="tablehead" href="/addlog"><button class="btn btn-dark">ADD WORK </button></a>
     <div class="table" style="overflow-x:auto;">
-        <a id="tablehead" href="/addlog">To add new exercise details</a>
-        <br>
     <table>
         <tr>
         <th>Date</th>
