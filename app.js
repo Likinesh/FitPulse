@@ -16,7 +16,7 @@ const db=new pg.Client({
     user:"postgres",
     host:"localhost",
     database:"users",
-    password:"postgres",
+    password:"likhith"
 });
 db.connect(console.log("DataBase connected"));
 
@@ -140,19 +140,19 @@ app.get("/user",async(req,res)=>{
         const x=result.rows[0].bmi;
         if(x<18.5){
             status="You are currently Underage";
-            range="BMI range: 0-18.5"
+            range="0-18.5"
         }
         else if(x>=18.5 && x<24.9){
             status="You are Healthy";
-            range="BMI range: 18.5-24.9"
+            range="18.5-24.9"
         }
         else if(x>=25 && x<29.9){
             status="You are currently Overage";
-            range="BMI range: 25-29.9"
+            range="25-29.9"
         }
         else if(x>=30){
             status="You have obesity";
-            range="BMI range: 30 or higher"
+            range="30 or higher"
         }
         const data={
             "user_name":result.rows[0].tusername,
