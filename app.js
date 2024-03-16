@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
 app.set("view engine","ejs");
 
-let user=null,user_val=0;
+let user=0,user_val=0;
 app.get("/",(req,res)=>{
     res.render("home",{data:user_val});
 })
@@ -279,7 +279,7 @@ app.post("/addlog",async (req,res)=>{
 // })
 
 app.get("/contact",(req,res)=>{
-    res.render("contact")
+    res.render("contact",{data:user_val});
 })
 app.post('/sendmail',async(req,res)=>{
     let name =req.body.name;
