@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
+import bcrypt from "bcrypt";
 import {dirname} from "path";
 import {fileURLToPath} from "url";
 import axios from "axios"
@@ -19,6 +20,8 @@ const db=new pg.Client({
     password:"likhith"
 });
 db.connect(console.log("DataBase connected"));
+
+const saltRounds=2;
 
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
@@ -42,20 +45,33 @@ app.post("/login",async (req,res)=>{
         console.log(storedemail.rows);
         console.log(storedemail.rows[0]);
         console.log(loginpassword);
+        const storedhashpassword=storedemail.rows[0].tpassword;
         if(storedemail.rows.length>0){ 
-        if(loginpassword=== storedemail.rows[0].tpassword){
-        user=storedemail.rows[0].tusername;
-        user_val=storedemail.rows[0].tusername;
-        res.render("home",{data:user_val});
-    }
-    else{
-        res.render("login",{data:"Wrong Password"})
-    }
- }
- else{
-    res.render("login",{data:"No User Found"})
-  }
-        }catch(err){
+            bcrypt.compare(loginpassword,storedhashpassword,(err,resu)=>{
+                if(err){
+                res.send("Error while checking hashed password");
+                console.log("Error while occuring checking hashed password:",err);
+                }
+                else{
+                    if(resu){
+                  user=storedemail.rows[0].tusername;
+               user_val=storedemail.rows[0].tusername;
+              res.render("home",{data:user_val});
+                }
+             
+              else{
+                res.render("login",{data:"Wrong Password"})
+              }
+            }
+              })
+    
+    
+            }
+    
+         else{
+           res.render("login",{data:"No User Found"})
+           }
+         }catch(err){
             console.log(err);
         }
 })
@@ -72,6 +88,7 @@ app.post("/signup",async (req,res)=>{
     const username=req.body.username;
     const email = req.body.email;
     const password=req.body.password;
+    
     try{
     const checkresult= await db.query(
         "SELECT * FROM users WHERE tusername=$1",
@@ -83,12 +100,20 @@ app.post("/signup",async (req,res)=>{
    }
    
    else{
-    await db.query(
-        "INSERT INTO users (tusername,tpassword,email) VALUES ($1,$2,$3)",
-        [username,password,email]
-    );
-    user=username;
-    res.redirect("/register");
+    bcrypt.hash(password,saltRounds,async(err,hash)=>{
+        if(err){
+            console.log("Error while hashing:",err);
+        }
+        else{
+        await db.query(
+            "INSERT INTO users (tusername,tpassword,email) VALUES ($1,$2,$3)",
+            [username,hash,email]
+        );
+        user=username;
+        res.redirect("/register");
+        }
+    })
+   
     }
     }
     catch(err){
@@ -238,13 +263,6 @@ app.post("/addlog",async (req,res)=>{
     }
 })
 
-app.get("/log",async(req,res)=>{
- const resul=await db.query(
-    "SELECT * FROM workout WHERE username=user",
-    [user]
-)
-res.render("user",{data:resul});
-})
 
 // app.post("/remove",async(req,res)=>{
 //     // const resul2 =await db.query(
