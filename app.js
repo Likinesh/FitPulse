@@ -76,8 +76,8 @@ app.post("/login",async (req,res)=>{
             console.log(err);
         }
 })
-app.post("/update",(req,res)=>{
-    res.render("update");
+app.get("/update",(req,res)=>{
+    res.render("update",{data:user_val});
 })
 app.get("/secrets",(req,res)=>{
     res.render("secrets.ejs");
