@@ -79,9 +79,6 @@ app.post("/login",async (req,res)=>{
 app.get("/update",(req,res)=>{
     res.render("update",{data:user_val});
 })
-app.get("/secrets",(req,res)=>{
-    res.render("secrets.ejs");
-})
 app.get("/signup",(req,res)=>{
     res.render("signup",{data:0});
 })
