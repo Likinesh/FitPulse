@@ -225,7 +225,7 @@ app.get("/addlog",async(req,res)=>{
           };
         const response = await axios.request(options);
         const result=response.data;
-        res.render("addlog",{act:result,data:user_val})
+        res.render("addlog2",{act:result,data:user_val})
     }
     catch(err){
         console.log(err);

@@ -1,0 +1,55 @@
+<link rel="stylesheet" href="css/style3.css">
+<div class="wrapper">
+      <div class="title-text">
+        <div class="title login">Activity</div>
+        <div class="title signup">Weight Lifting</div>
+      </div>
+      <div class="form-container">
+        <div class="slide-controls">
+          <input type="radio" name="slide" id="login" checked>
+          <input type="radio" name="slide" id="signup">
+          <label for="login" class="slide login">Activity</label>
+          <label for="signup" class="slide signup">Weight Lifting</label>
+          <div class="slider-tab"></div>
+        </div>
+        <div class="form-inner">
+          <form action="/addlog" class="login">
+            <div class="field">
+              <label for="activity"></label>
+              <select name="activity" required>
+                  <% for( let index = 0;index<act.activities.length;index++){ %>
+                      <option value="<%= act.activities[index] %>"><%= act.activities[index] %></option>
+                  <% } %>
+              </select>
+            </div>
+            <div class="field">
+                <label for="duration"></label>
+                <input type="number" class="form-control" name="duration" placeholder="in minutes" required>
+            </div>
+            <div class="field btn">
+                <label for="date"></label>
+                <input type="date" class="form-control" name="date" placeholder="date" required>
+            </div>
+            <button type="submit" class="btn btn-dark">ADD</button>
+          </form>
+          <form action="/addlog" class="signup">
+            <div class="field">
+                <label for="activity"></label>
+                <select name="activity" required>
+                    <option value="Weight_Lifting">Weight Lifting</option>
+                </select>
+              </div>
+              <div class="field">
+                  <label for="duration"></label>
+                  <input type="number" class="form-control" name="duration" placeholder="in Kg" required>
+              </div>
+              <div class="field btn">
+                  <label for="date"></label>
+                  <input type="date" class="form-control" name="date" placeholder="date" required>
+              </div>
+              <button type="submit" class="btn btn-dark">ADD</button>
+            </form>
+        </div>
+      </div>
+    </div>
+<script src="js/index.js"></script>
