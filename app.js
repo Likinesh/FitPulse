@@ -239,16 +239,21 @@ app.post("/addlog",async (req,res)=>{
     let date=req.body.date;
     let cal;
     try{
-        const options1= {
-            method: 'GET',
-            url: 'https://api.api-ninjas.com/v1/caloriesburned?activity='+user_activity,
-            headers: {
-                'X-API-Key': 'tRtAPplmWukhtiPoolga5Q==5p7NOagUHP5IloQa'
-            }
-          };
-        const response = await axios.request(options1);
-        const result=response.data;
-        cal=(result[0].calories_per_hour)*(dur/60);
+        if(user_activity!="Weight_Lifting"){
+            const options1= {
+                method: 'GET',
+                url: 'https://api.api-ninjas.com/v1/caloriesburned?activity='+user_activity,
+                headers: {
+                    'X-API-Key': 'tRtAPplmWukhtiPoolga5Q==5p7NOagUHP5IloQa'
+                }
+              };
+            const response = await axios.request(options1);
+            const result=response.data;
+            cal=(result[0].calories_per_hour)*(dur/60);
+        }
+        else{
+            cal=0
+        }
     await db.query( 
         "INSERT INTO workout(username,duration,activity,date,cal) VALUES ($1,$2,$3,$4,$5)",
         [username,dur,user_activity,date,cal]  

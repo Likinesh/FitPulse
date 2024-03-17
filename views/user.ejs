@@ -116,7 +116,11 @@
                     <td><%= log.rows[i].date %></td>
                     <td><%= log.rows[i].activity %></td>
                     <td><%= log.rows[i].duration %></td>
-                    <td><%= log.rows[i].cal %></td>
+                    <% if (log.rows[i].cal!=0) { %>
+                      <td><%= log.rows[i].cal %></td>
+                    <% } else{ %>
+                      <td> </td>
+                    <% } %>
                 </tr>
                 <% } %>
     </table>
