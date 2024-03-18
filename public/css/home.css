@@ -3,3 +3,13 @@
 }.navbar-brand{
     color: white;
 }
+.body{
+   flex: 0 0 auto;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+}
+.img{
+    margin-left: 7%;
+    margin-top: 2%;
+}

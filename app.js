@@ -17,7 +17,7 @@ const db=new pg.Client({
     user:"postgres",
     host:"localhost",
     database:"users",
-    password:"postgres"
+    password:"likhith"
 });
 db.connect(console.log("DataBase connected"));
 
