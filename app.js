@@ -1,3 +1,4 @@
+// Importing required modules
 import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
@@ -13,6 +14,8 @@ const port=3000;
 
 app.use(morgan('combined'));
 morgan('tiny')
+
+//Connection to postgresql 
 const db=new pg.Client({
     user:"postgres",
     host:"localhost",
@@ -23,17 +26,22 @@ db.connect(console.log("DataBase connected"));
 
 const saltRounds=2;
 
+//Middleware
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
 app.set("view engine","ejs");
 
+//Variable to define the user
 let user=0,user_val=0;
+//To get home page
 app.get("/",(req,res)=>{
     res.render("home",{data:user_val});
 })
+//To get login page
 app.get("/login",(req,res)=>{
     res.render("login",{data:0});
 })
+//To check for login details from database
 app.post("/login",async (req,res)=>{
         const loginemail=req.body.email;
         const loginpassword=req.body.password;
@@ -45,7 +53,6 @@ app.post("/login",async (req,res)=>{
         console.log(storedemail.rows);
         console.log(storedemail.rows[0]);
         console.log(loginpassword);
-       
         if(storedemail.rows.length>0){ 
             const storedhashpassword=storedemail.rows[0].tpassword;
             bcrypt.compare(loginpassword,storedhashpassword,(err,resu)=>{
@@ -59,7 +66,6 @@ app.post("/login",async (req,res)=>{
                user_val=storedemail.rows[0].tusername;
               res.render("home",{data:user_val});
                 }
-             
               else{
                 res.render("login",{data:"Wrong Password"})
               }
@@ -73,30 +79,31 @@ app.post("/login",async (req,res)=>{
             console.log(err);
         }
 })
+//To open update info page
 app.get("/update",(req,res)=>{
     res.render("update",{data:user_val});
 })
+//To open the timetable page
 app.get("/timetable",(req,res)=>{
     res.render("class",{data:user_val});
 })
+//To get signup page
 app.get("/signup",(req,res)=>{
     res.render("signup",{data:0});
 })
+//To store signup details in database
 app.post("/signup",async (req,res)=>{
     const username=req.body.username;
     const email = req.body.email;
     const password=req.body.password;
-    
     try{
     const checkresult= await db.query(
         "SELECT * FROM users WHERE tusername=$1",
         [username]
     );
-   
    if(checkresult.rows.length>0){
     res.render("signup",{data:"username already exists."});
    }
-   
    else{
     bcrypt.hash(password,saltRounds,async(err,hash)=>{
         if(err){
@@ -119,10 +126,12 @@ app.post("/signup",async (req,res)=>{
         res.send("<h1>Error connecting to database</h1>")
     }
 })
+//To open details entry page
 app.get("/register",(req,res)=>{
     res.render("register");
 })
-console.log(user)
+console.log(user);
+//To store the information of user
 app.post("/register",async(req,res)=>{
     const tage=req.body.age;
     const tweight = req.body.weight;
@@ -141,6 +150,7 @@ app.post("/register",async(req,res)=>{
         res.send("<h1>Error connecting to database</h1>")
     }
 })
+//To get user page
 app.get("/user",async(req,res)=>{
     try{
         console.log(user);
@@ -196,6 +206,7 @@ app.get("/user",async(req,res)=>{
         res.send("<h1>Error connecting to database</h1>")
     }
 })
+//To update the information in database
 app.post("/update-info",async(req,res)=>{
     const tage=req.body.age;
     const tweight = req.body.weight;
@@ -214,6 +225,7 @@ app.post("/update-info",async(req,res)=>{
         res.send("<h1>Error connecting to database</h1>")
     }
 })
+//To open work adding page
 app.get("/addlog",async(req,res)=>{
     try{
         const options = {
@@ -232,6 +244,7 @@ app.get("/addlog",async(req,res)=>{
         res.send("<h1>Error connecting to API</h1>")
     }
 })
+//To add the exercise in the database
 app.post("/addlog",async (req,res)=>{
     const username=user_val;
     const dur= req.body.duration;
@@ -265,24 +278,11 @@ app.post("/addlog",async (req,res)=>{
         res.send("<h1>Error connecting to database</h1>")
     }
 })
-
-
-// app.post("/remove",async(req,res)=>{
-//     // const resul2 =await db.query(
-//     //         "SELECT * FROM workout WHERE username=user",
-//     //         [user]
-//     //     )
-//         const workout_id=resul.rows[0].workout_id;
-//        await db.query(
-//          "DELETE FROM workout WHERE workout_id=$1",
-// [workout_id]
-//        )
-//        res.render("user",{data:resul});
-// })
-
+//To get contact page
 app.get("/contact",(req,res)=>{
     res.render("contact",{data:user_val});
 })
+//TO send the information to mail via nodemailer
 app.post('/sendmail',async(req,res)=>{
     let name =req.body.name;
     let mail =req.body.mail;
@@ -305,7 +305,7 @@ app.post('/sendmail',async(req,res)=>{
     console.log((await info).messageId)
     res.redirect("/contact")
   })
-
+//To allocate a port or url
 app.listen(port,()=>{
     console.log(`server running on port ${port}`);
 })
