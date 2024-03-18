@@ -19,7 +19,7 @@
             Features
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Class Time Table</a></li>
+            <li><a class="dropdown-item" href="/timetable">Class Time Table</a></li>
             <li><a class="dropdown-item" href="#">Special Exercies</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="#"></a></li>
@@ -57,7 +57,7 @@
           <div class="slider-tab"></div>
         </div>
         <div class="form-inner">
-          <form action="/addlog" class="login">
+          <form action="/addlog" class="login" method="post">
             <div class="field">
               <label for="activity"></label>
               <select name="activity" required>
@@ -80,7 +80,7 @@
               <button type="submit" class="btn btn-dark">ADD</button>
             </div>
           </form>
-          <form action="/addlog" class="signup">
+          <form action="/addlog" class="signup" method="post">
             <div class="field">
                 <label for="activity"></label>
                 <select name="activity" required>
