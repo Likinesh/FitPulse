@@ -3,13 +3,48 @@
 }.navbar-brand{
     color: white;
 }
-.body{
-   flex: 0 0 auto;
-    min-height: 0;
-    min-width: 0;
-    width: 100%;
+.top{
+    margin-left: 30%;
+    color: rgb(98, 0, 255);
+
 }
-.img{
+.para{
     margin-left: 7%;
-    margin-top: 2%;
 }
+#border{
+    color: whitesmoke;
+  }
+.grid-container {
+    columns: 3 400px;
+    column-gap: 1.5rem;
+    width: 90%;
+    margin: 0 auto;
+    flex-direction: row;
+  }
+  
+  .grid-container div {
+    width: 150px;
+    margin: 0 1.5rem 1.5rem 0;
+    display: inline-block;
+    width: 100%;
+    border: solid 3.5px rgb(5, 2, 2);
+    padding: 5px;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    transition: all 0.25s ease-in-out;
+  }
+  
+  .grid-container div:hover img {
+    filter: grayscale(0);
+  }
+  
+  .grid-container div:hover {
+    border-color: rgb(13, 208, 198);
+  }
+  
+  .grid-container div img {
+    width: 100%;
+    /* filter: grayscale(100%); */
+    border-radius: 5px;
+    transition: all 0.25s ease-in-out;
+  }
