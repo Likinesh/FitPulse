@@ -65,10 +65,7 @@ app.post("/login",async (req,res)=>{
               }
             }
               })
-    
-    
             }
-    
          else{
            res.render("login",{data:"No User Found"})
            }
@@ -78,6 +75,9 @@ app.post("/login",async (req,res)=>{
 })
 app.get("/update",(req,res)=>{
     res.render("update",{data:user_val});
+})
+app.get("/timetable",(req,res)=>{
+    res.render("class",{data:user_val});
 })
 app.get("/signup",(req,res)=>{
     res.render("signup",{data:0});
