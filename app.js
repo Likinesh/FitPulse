@@ -20,7 +20,7 @@ const db=new pg.Client({
     user:"postgres",
     host:"localhost",
     database:"users",
-    password:"likhith"
+    password:"postgres"
 });
 db.connect(console.log("DataBase connected"));
 
@@ -288,18 +288,18 @@ app.post('/sendmail',async(req,res)=>{
     let mail =req.body.mail;
     let doubt = req.body.query;
     let testaccount = await nodemailer.createTestAccount();
-    let transporter = await nodemailer.createTransport({
-      host: "sandbox.smtp.mailtrap.io",
-      port: 2525,
-      auth: {
-        user: "8be94564c6efe9",
-        pass: "134001e0c60db6"
-      },
-    })
+    var transport = nodemailer.createTransport({
+        host: "sandbox.smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+          user: "8bf80918c93dcb",
+          pass: "c3544ef0db2ddc"
+        }
+      });
     let info =transporter.sendMail({
         from: name + " " + mail,    
-        to: "likithkskommareddy@gmail.com",  
-        subject: "Query regarding Space Explorer",    
+        to: "sdubed01@gmail.com",  
+        subject: "Query regarding Fitpulse",    
         text: doubt
     })
     console.log((await info).messageId)
